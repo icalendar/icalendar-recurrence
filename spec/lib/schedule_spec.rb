@@ -49,11 +49,4 @@ describe Icalendar::Recurrence::Schedule do
       expect(schedule.parse_ical_byday("MO")).to eq({day_code: "MO", position: 0})
     end
   end
-
-  def example_event(ics_name)
-    ics_path = File.expand_path "#{File.dirname(__FILE__)}/fixtures/recurrence_examples/#{ics_name}_event.ics"
-    ics_string = File.read(ics_path)
-    calendars = Icalendar.parse(ics_string)
-    Array(calendars).first.events.first
-  end
 end
