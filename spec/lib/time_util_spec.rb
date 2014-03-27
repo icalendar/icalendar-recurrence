@@ -28,6 +28,10 @@ describe TimeUtil do
       
       expect(TimeUtil.to_time(zoned_datetime)).to eq(pst_midnight)
     end
+
+    it "parses a string" do
+      expect(TimeUtil.to_time("20140118T075959Z")).to eq(Time.parse("20140118T075959Z"))
+    end
   end
 
   describe ".date_to_time" do
@@ -60,6 +64,14 @@ describe TimeUtil do
 
     it "removes quotes from given TZID" do
       expect(TimeUtil.timezone_offset("\"America/Los_Angeles\"")).to eq("-08:00")
+    end
+
+    it "uses first element from array when given" do
+      expect(TimeUtil.timezone_offset(["America/Los_Angeles"])).to eq("-08:00")
+    end
+
+    it "returns nil when given nil" do
+      expect(TimeUtil.timezone_offset(nil)).to eq(nil)
     end
 
     it "calculates offset at a given moment" do

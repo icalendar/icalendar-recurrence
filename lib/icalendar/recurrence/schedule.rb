@@ -13,7 +13,7 @@ module Icalendar
       end
 
       def timezone
-        event.start.icalendar_tzid.to_s.gsub(/^(["'])|(["'])$/, "") if event.start.respond_to?(:icalendar_tzid)
+        event.tzid
       end
 
       def rrules
@@ -90,8 +90,9 @@ module Icalendar
 
         ice_cube_recurrence_rule.tap do |r|
           days = transform_byday_to_hash(rrule.by_day)
+
           r.month_of_year(rrule.by_month) unless rrule.by_month.nil?
-          r.day_of_month(rrule.by_month_day) unless rrule.by_month_day.nil?
+          r.day_of_month(rrule.by_month_day.map(&:to_i)) unless rrule.by_month_day.nil?
           r.day_of_week(days) if days.is_a?(Hash) and !days.empty?
           r.day(days) if days.is_a?(Array) and !days.empty?
           r.until(TimeUtil.to_time(rrule.until)) if rrule.until

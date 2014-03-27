@@ -5,9 +5,10 @@ module Icalendar
     module TimeUtil
       def datetime_to_time(datetime)
         raise ArgumentError, "Unsupported DateTime object passed (must be Icalendar::Values::DateTime#{datetime.class} passed instead)" unless supported_datetime_object?(datetime)
-        hour_minute_utc_offset = timezone_to_hour_minute_utc_offset(datetime.ical_params["tzid"], datetime.to_date) || datetime.strftime("%:z")
+        offset = timezone_offset(datetime.ical_params["tzid"], moment: datetime.to_date)
+        offset ||= datetime.strftime("%:z")
 
-        Time.new(datetime.year, datetime.month, datetime.mday, datetime.hour, datetime.min, datetime.sec, hour_minute_utc_offset)
+        Time.new(datetime.year, datetime.month, datetime.mday, datetime.hour, datetime.min, datetime.sec, offset)
       end
 
       def date_to_time(date)
@@ -22,8 +23,9 @@ module Icalendar
           datetime_to_time(time_object)
         elsif supported_date_object?(time_object)
           date_to_time(time_object)
+        elsif time_object.is_a?(String)
+          Time.parse(time_object)
         else
-          raise time_object.class.ancestors.inspect
           raise ArgumentError, "Unsupported time object passed: #{time_object.inspect}"
         end
       end
@@ -38,6 +40,7 @@ module Icalendar
       # TimeUtil.timezone_offset("America/Los_Angeles", moment: Time.parse("2014-04-01")) => -07:00
       # 
       def timezone_offset(tzid, options = {})
+        tzid = Array(tzid).first
         options = {moment: Time.now}.merge(options)
         moment = options.fetch(:moment)
         utc_moment = to_time(moment).utc
