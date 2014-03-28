@@ -25,4 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'tzinfo', '~> 0.3'
   spec.add_development_dependency 'timecop', '~> 0.6.3'
   spec.add_development_dependency 'guard-rspec', '~> 4.2.8'
+  spec.add_development_dependency 'activesupport', '~> 4.0.4'
+  spec.add_development_dependency 'rspec-nc'
 end
