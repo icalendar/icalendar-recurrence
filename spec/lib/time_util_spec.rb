@@ -88,4 +88,50 @@ describe TimeUtil do
       expect(TimeUtil.timezone_offset("America/Los_Angeles", moment: minute_after_clocks_change)).to eq("-08:00")
     end
   end
+
+  describe ".force_zone" do
+    it "replaces the exist offset with the offset from a named zone" do
+      eight_am_utc = Time.parse("20140101T0800Z")
+      forced_time = TimeUtil.force_zone(eight_am_utc, "America/Los_Angeles")
+      expect(forced_time.utc.to_s).to eq("2014-01-01 16:00:00 UTC")
+    end
+
+    context "when forced timezone is different than original" do
+      it "changes the moment in time the object refers to" do
+        eight_am_utc = Time.parse("20140101T0800Z")
+        forced_time = TimeUtil.force_zone(eight_am_utc, "America/Los_Angeles")
+        expect(forced_time.to_i).to_not eq(eight_am_utc.to_i)
+      end
+    end
+
+    it "works for non-UTC time" do
+      eight_am_local = Time.parse("2014-01-01 08:00")
+      forced_time = TimeUtil.force_zone(eight_am_local, "Asia/Hong_Kong")
+      expect(forced_time.utc.to_s).to eq("2014-01-01 00:00:00 UTC")
+    end
+
+    context "when given an unknown TZID" do
+      it "raises an error" do
+        expect {
+          TimeUtil.force_zone(Time.now, "Foo/Bar")
+        }.to raise_error(ArgumentError)
+      end
+    end
+
+    it "works with this example" do
+      forced_time = Time.parse("2014-01-04 at 4pm").force_zone("America/Los_Angeles")
+      expect(forced_time.hour).to eq(16)
+    end
+
+    it "extends Time" do
+      forced_time = Time.parse("2014-01-01 at 8am").force_zone("Asia/Hong_Kong")
+      expect(forced_time.utc.to_s).to eq("2014-01-01 00:00:00 UTC")
+    end
+
+    it "doesn't change passed in time objects to UTC" do
+      eight_am_local = Time.parse("2014-01-01 08:00")
+      TimeUtil.force_zone(eight_am_local, "Asia/Hong_Kong")
+      expect(eight_am_local.utc?).to eq(false)
+    end
+  end
 end

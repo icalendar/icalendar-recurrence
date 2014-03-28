@@ -43,7 +43,7 @@ module Icalendar
         tzid = Array(tzid).first
         options = {moment: Time.now}.merge(options)
         moment = options.fetch(:moment)
-        utc_moment = to_time(moment).utc
+        utc_moment = to_time(moment.clone).utc
         tzid = tzid.to_s.gsub(/^(["'])|(["'])$/, "")
         utc_offset =  TZInfo::Timezone.get(tzid).period_for_utc(utc_moment).utc_total_offset # this seems to work, but I feel like there is a lurking bug
         hour_offset = utc_offset/60/60
@@ -71,7 +71,24 @@ module Icalendar
         time_object.is_a?(Time)
       end
 
+      # Replaces the existing offset with one associated with given TZID. Does
+      # not change hour of day, only the offset. For example, if given a UTC 
+      # time of 8am, the returned time object will still be 8am but in another
+      # timezone. See test for working examples.
+      def force_zone(time, tzid)
+        offset = timezone_offset(tzid, moment: time)
+        raise ArgumentError.new("Unknown TZID: #{tzid}") if offset.nil?
+        Time.new(time.year, time.month, time.mday, time.hour, time.min, time.sec, offset)
+      end
+
       extend self
     end
+  end
+end
+
+# Should we move this to a module and extend time?
+class Time
+  def force_zone(tzid)
+    TimeUtil.force_zone(self, tzid)
   end
 end

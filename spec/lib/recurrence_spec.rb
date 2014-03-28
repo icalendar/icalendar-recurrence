@@ -32,9 +32,10 @@ describe "Event#occurrences_between" do
 
     it "occurs twice over 8 days" do
       occurrences = event.occurrences_between(start_time, start_time + 8.days)
+
       expect(occurrences.length).to eq(2)
-      expect(occurrences[0].start_time).to eq(Time.parse("2014-02-03 at 4pm"))
-      expect(occurrences[1].start_time).to eq(Time.parse("2014-02-10 at 4pm"))
+      expect(occurrences[0].start_time).to eq(Time.parse("2014-02-03 16:00:00 -0800"))
+      expect(occurrences[1].start_time).to eq(Time.parse("2014-02-10 16:00:00 -0800"))
     end
   end
 
@@ -93,9 +94,14 @@ describe "Event#occurrences_between" do
     it "occurs from start date until specified 'until' date" do
       occurrences = event.occurrences_between(start_time, start_time + 30.days)
 
+      expected_start_times = [
+        Time.parse("2014-01-15 at 12pm").force_zone("America/Los_Angeles").utc,
+        Time.parse("2014-01-18 at 12pm").force_zone("America/Los_Angeles").utc
+      ]
+
       expect(occurrences.length).to eq(5)
-      expect(occurrences.map(&:start_time)).to include(Time.parse("2014-01-15 at 12pm"))
-      expect(occurrences.map(&:start_time)).to_not include(Time.parse("2014-01-18 at 12pm"))
+      expect(occurrences.map(&:start_time)).to include(expected_start_times[0])
+      expect(occurrences.map(&:start_time)).to_not include(expected_start_times[1])
     end
   end
 
@@ -105,19 +111,25 @@ describe "Event#occurrences_between" do
     it "occurs 4 times then stops" do
       occurrences = event.occurrences_between(start_time, start_time + 365.days)
       expect(occurrences.length).to eq(4)
-      expect(occurrences.map(&:start_time)).to include(Time.parse("2014-01-15 at 12pm"))
-      expect(occurrences.map(&:start_time)).to_not include(Time.parse("2014-01-17 at 12pm"))
+      expect(occurrences.map(&:start_time)).to include(Time.parse("2014-01-15 at 12pm").force_zone("America/Los_Angeles").utc)
+      expect(occurrences.map(&:start_time)).to_not include(Time.parse("2014-01-17 at 12pm").force_zone("America/Los_Angeles").utc)
     end
   end
 
   context "event repeating on first saturday of month event" do
     let(:event) { example_event :first_saturday_of_month }
+    
     it "occurs twice over two months" do
       occurrences = event.occurrences_between(start_time, start_time + 55.days)
-      
+
+      expected_start_times = [
+        Time.parse("2014-01-04 at 12am").force_zone("America/Los_Angeles"),
+        Time.parse("2014-02-01 at 12am").force_zone("America/Los_Angeles"),
+      ]
+
       expect(occurrences.length).to eq(2)
-      expect(occurrences[0].start_time).to eq(Time.parse("2014-01-04").utc)
-      expect(occurrences[1].start_time).to eq(Time.parse("2014-02-01").utc)
+      expect(occurrences[0].start_time).to eq(expected_start_times[0])
+      expect(occurrences[1].start_time).to eq(expected_start_times[1])
     end
   end
 

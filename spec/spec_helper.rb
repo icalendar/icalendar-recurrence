@@ -1,5 +1,6 @@
 require 'support/helpers'
 require 'timecop'
+
 require 'icalendar/recurrence'
 
 include Icalendar::Recurrence
