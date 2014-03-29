@@ -4,17 +4,14 @@ Adds event recurrence to the [icalendar gem](https://github.com/icalendar/icalen
 
 ## Install
 
-_Note: This only works against the 2.0beta release of the icalendar gem. If 'icalendar' is already in your gemfile, remove it and let this gem manage the icalendar dependency for you._
+_Note: This only works against the 2.0beta release of the icalendar gem._
 
-```shell
-gem install icalendar-recurrence
-```
-
-or add the following line to Gemfile:
+**Until icalendar 2.0beta is released, use git repos in your Gemfile:**
 
 
 ```ruby
-gem 'icalendar-recurrence'
+gem "icalendar", git: "https://github.com/icalendar/icalendar", branch: "2.0beta"
+gem "icalendar-recurrence", git: "https://github.com/icalendar/icalendar-recurrence"
 ```
 
 and run `bundle install` from your shell.
