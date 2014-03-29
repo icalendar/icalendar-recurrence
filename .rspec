@@ -1,3 +1,3 @@
 --color
 --format progress
---format Nc
+<%= "--format Nc" if RUBY_PLATFORM.match(/darwin/) %>
