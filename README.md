@@ -4,14 +4,10 @@ Adds event recurrence to the [icalendar gem](https://github.com/icalendar/icalen
 
 ## Install
 
-_Note: This only works against the 2.0beta release of the icalendar gem._
-
-**Until icalendar 2.0beta is released, use git repos in your Gemfile:**
-
+_Note: Works with 2.0.0beta.1 (or newer) icalendar gem. If you're using icalendar <=1.5.4, take a look at the [new code](https://github.com/icalendar/icalendar/tree/2.0beta) before you switch over._
 
 ```ruby
-gem "icalendar", git: "https://github.com/icalendar/icalendar", branch: "2.0beta"
-gem "icalendar-recurrence", git: "https://github.com/icalendar/icalendar-recurrence"
+gem "icalendar-recurrence"
 ```
 
 and run `bundle install` from your shell.
@@ -35,7 +31,7 @@ An event occurrence is a simple struct object with `start_time` and `end_time` m
 
 ```ruby
 occurrence.start_time # => 2014-02-01 00:00:00 -0800
-occurrence.end_time # => 2014-02-02 00:00:00 -0800
+occurrence.end_time   # => 2014-02-02 00:00:00 -0800
 ```
 
 ### Daily event with excluded date (inline ICS example)
