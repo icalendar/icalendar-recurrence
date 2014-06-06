@@ -108,6 +108,7 @@ module Icalendar
       end
 
       def base_ice_cube_recurrence_rule(frequency, interval)
+        interval ||= 1 # We don't want interval to be nil (default to 1)
         if frequency == "DAILY"
           IceCube::DailyRule.new(interval)
         elsif frequency == "WEEKLY"
