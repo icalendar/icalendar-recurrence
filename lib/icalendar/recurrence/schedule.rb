@@ -28,7 +28,6 @@ module Icalendar
         if event.end
           TimeUtil.to_time(event.end)
         else
-          # If end time is not given, derive it from start time and event duration
           start_time + convert_duration_to_seconds(event.duration)
         end
       end
@@ -108,7 +107,7 @@ module Icalendar
       end
 
       def base_ice_cube_recurrence_rule(frequency, interval)
-        interval ||= 1 # We don't want interval to be nil (default to 1)
+        interval ||= 1
         if frequency == "DAILY"
           IceCube::DailyRule.new(interval)
         elsif frequency == "WEEKLY"
@@ -153,10 +152,8 @@ module Icalendar
       def convert_duration_to_seconds(ical_duration)
         return 0 unless ical_duration
 
-        # Convert Icalendar::Values::Duration time parts into seconds, then sum them all up
         conversion_rates = { seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800 }
         seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration[unit] * multiplier }
-        # Durations can be negative
         seconds * (ical_duration.past ? -1 : 1)
       end
     end
