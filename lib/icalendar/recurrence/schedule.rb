@@ -25,7 +25,11 @@ module Icalendar
       end
 
       def end_time
-        TimeUtil.to_time(event.end)
+        if event.end
+          TimeUtil.to_time(event.end)
+        else
+          start_time + convert_duration_to_seconds(event.duration)
+        end
       end
 
       def occurrences_between(begin_time, closing_time)
@@ -103,6 +107,7 @@ module Icalendar
       end
 
       def base_ice_cube_recurrence_rule(frequency, interval)
+        interval ||= 1
         if frequency == "DAILY"
           IceCube::DailyRule.new(interval)
         elsif frequency == "WEEKLY"
@@ -142,6 +147,14 @@ module Icalendar
       def parse_ical_byday(ical_byday)
         match = ical_byday.match(/(\d*)([A-Z]{2})/)
         {day_code: match[2], position: match[1].to_i}
+      end
+
+      def convert_duration_to_seconds(ical_duration)
+        return 0 unless ical_duration
+
+        conversion_rates = { seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800 }
+        seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration[unit] * multiplier }
+        seconds * (ical_duration.past ? -1 : 1)
       end
     end
   end
