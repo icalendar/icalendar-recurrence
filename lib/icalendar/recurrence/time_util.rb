@@ -83,12 +83,15 @@ module Icalendar
 
       extend self
     end
+
+    module TimeExtensions
+      def force_zone(tzid)
+        TimeUtil.force_zone(self, tzid)
+      end
+    end
   end
 end
 
-# Should we move this to a module and extend time?
 class Time
-  def force_zone(tzid)
-    TimeUtil.force_zone(self, tzid)
-  end
+  include Icalendar::Recurrence::TimeExtensions
 end
