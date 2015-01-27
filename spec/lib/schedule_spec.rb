@@ -41,6 +41,29 @@ describe Icalendar::Recurrence::Schedule do
     end
   end
 
+  describe "#all_occurrences" do
+    let(:example_occurrence) do
+      weekly_event = example_event :weekly_with_count
+      schedule = Schedule.new(weekly_event)
+      schedule.all_occurrences.first
+    end
+
+    it "returns object that responds to start_time and end_time" do
+      expect(example_occurrence).to respond_to :start_time
+      expect(example_occurrence).to respond_to :end_time
+    end
+
+    let(:example_occurrences) do
+      weekly_event = example_event :weekly_with_count
+      schedule = Schedule.new(weekly_event)
+      schedule.all_occurrences
+    end
+
+    it "returns all occurrences" do
+      expect(example_occurrences.count).to eq(151)
+    end
+  end
+
   describe "#parse_ical_byday" do
     let(:schedule) { Schedule.new(nil) }
 

@@ -40,6 +40,14 @@ module Icalendar
         end
       end
 
+      def all_occurrences
+        ice_cube_occurrences = ice_cube_schedule.all_occurrences
+
+        ice_cube_occurrences.map do |occurrence|
+          convert_ice_cube_occurrence(occurrence)
+        end
+      end
+
       def convert_ice_cube_occurrence(ice_cube_occurrence)
         if timezone
           begin
@@ -53,7 +61,7 @@ module Icalendar
 
         start_time ||= ice_cube_occurrence.start_time
         end_time ||= ice_cube_occurrence.end_time
-        
+
         Icalendar::Recurrence::Occurrence.new(start_time, end_time)
       end
 
