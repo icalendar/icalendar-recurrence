@@ -95,10 +95,14 @@ module Icalendar
         ice_cube_recurrence_rule.tap do |r|
           days = transform_byday_to_hash(rrule.by_day)
 
-          r.month_of_year(rrule.by_month) unless rrule.by_month.nil?
+          r.month_of_year(rrule.by_month.map(&:to_i)) unless rrule.by_month.nil?
+          r.day_of_year(rrule.by_year_day.map(&:to_i)) unless rrule.by_year_day.nil?
           r.day_of_month(rrule.by_month_day.map(&:to_i)) unless rrule.by_month_day.nil?
           r.day_of_week(days) if days.is_a?(Hash) and !days.empty?
           r.day(days) if days.is_a?(Array) and !days.empty?
+          r.hour_of_day(rrule.by_hour.map(&:to_i)) unless rrule.by_hour.nil?
+          r.minute_of_hour(rrule.by_minute.map(&:to_i)) unless rrule.by_minute.nil?
+          r.second_of_minute(rrule.by_second.map(&:to_i)) unless rrule.by_second.nil?
           r.until(TimeUtil.to_time(rrule.until)) if rrule.until
           r.count(rrule.count)
         end
