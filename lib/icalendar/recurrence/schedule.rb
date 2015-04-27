@@ -90,7 +90,7 @@ module Icalendar
 
 
       def convert_rrule_to_ice_cube_recurrence_rule(rrule)
-        ice_cube_recurrence_rule = base_ice_cube_recurrence_rule(rrule.frequency, rrule.interval)
+        ice_cube_recurrence_rule = base_ice_cube_recurrence_rule(rrule.frequency, rrule.interval, rrule.week_start)
 
         ice_cube_recurrence_rule.tap do |r|
           days = transform_byday_to_hash(rrule.by_day)
@@ -110,12 +110,16 @@ module Icalendar
         ice_cube_recurrence_rule
       end
 
-      def base_ice_cube_recurrence_rule(frequency, interval)
+      def base_ice_cube_recurrence_rule(frequency, interval, week_start)
         interval ||= 1
         if frequency == "DAILY"
           IceCube::DailyRule.new(interval)
         elsif frequency == "WEEKLY"
-          IceCube::WeeklyRule.new(interval)
+          if week_start.nil?
+            IceCube::WeeklyRule.new(interval)
+          else
+            IceCube::WeeklyRule.new(interval, convert_day_code_to_symbol(week_start))
+          end
         elsif frequency == "MONTHLY"
           IceCube::MonthlyRule.new(interval)
         elsif frequency == "YEARLY"
@@ -130,19 +134,23 @@ module Icalendar
         day_code = data.fetch(:day_code)
         position = data.fetch(:position)
 
-        day_symbol = case day_code.to_s
-        when "SU" then :sunday
-        when "MO" then :monday
-        when "TU" then :tuesday
-        when "WE" then :wednesday
-        when "TH" then :thursday
-        when "FR" then :friday
-        when "SA" then :saturday
-        else
-          raise ArgumentError.new "Unexpected ical_day: #{ical_day.inspect}"
-        end
+        day_symbol = convert_day_code_to_symbol(day_code.to_s)
 
         [day_symbol, Array(position)]
+      end
+
+      def convert_day_code_to_symbol(day_code)
+        case day_code
+          when "SU" then :sunday
+          when "MO" then :monday
+          when "TU" then :tuesday
+          when "WE" then :wednesday
+          when "TH" then :thursday
+          when "FR" then :friday
+          when "SA" then :saturday
+          else
+            raise ArgumentError.new "Unexpected day_code: #{day_code}"
+        end
       end
 
       # Parses ICAL BYDAY value to day and position array
