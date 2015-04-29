@@ -90,15 +90,19 @@ module Icalendar
 
 
       def convert_rrule_to_ice_cube_recurrence_rule(rrule)
-        ice_cube_recurrence_rule = base_ice_cube_recurrence_rule(rrule.frequency, rrule.interval)
+        ice_cube_recurrence_rule = base_ice_cube_recurrence_rule(rrule.frequency, rrule.interval, rrule.week_start)
 
         ice_cube_recurrence_rule.tap do |r|
           days = transform_byday_to_hash(rrule.by_day)
 
-          r.month_of_year(rrule.by_month) unless rrule.by_month.nil?
+          r.month_of_year(rrule.by_month.map(&:to_i)) unless rrule.by_month.nil?
+          r.day_of_year(rrule.by_year_day.map(&:to_i)) unless rrule.by_year_day.nil?
           r.day_of_month(rrule.by_month_day.map(&:to_i)) unless rrule.by_month_day.nil?
           r.day_of_week(days) if days.is_a?(Hash) and !days.empty?
           r.day(days) if days.is_a?(Array) and !days.empty?
+          r.hour_of_day(rrule.by_hour.map(&:to_i)) unless rrule.by_hour.nil?
+          r.minute_of_hour(rrule.by_minute.map(&:to_i)) unless rrule.by_minute.nil?
+          r.second_of_minute(rrule.by_second.map(&:to_i)) unless rrule.by_second.nil?
           r.until(TimeUtil.to_time(rrule.until)) if rrule.until
           r.count(rrule.count)
         end
@@ -106,12 +110,16 @@ module Icalendar
         ice_cube_recurrence_rule
       end
 
-      def base_ice_cube_recurrence_rule(frequency, interval)
+      def base_ice_cube_recurrence_rule(frequency, interval, week_start)
         interval ||= 1
         if frequency == "DAILY"
           IceCube::DailyRule.new(interval)
         elsif frequency == "WEEKLY"
-          IceCube::WeeklyRule.new(interval)
+          if week_start.nil?
+            IceCube::WeeklyRule.new(interval)
+          else
+            IceCube::WeeklyRule.new(interval, convert_day_code_to_symbol(week_start))
+          end
         elsif frequency == "MONTHLY"
           IceCube::MonthlyRule.new(interval)
         elsif frequency == "YEARLY"
@@ -126,19 +134,23 @@ module Icalendar
         day_code = data.fetch(:day_code)
         position = data.fetch(:position)
 
-        day_symbol = case day_code.to_s
-        when "SU" then :sunday
-        when "MO" then :monday
-        when "TU" then :tuesday
-        when "WE" then :wednesday
-        when "TH" then :thursday
-        when "FR" then :friday
-        when "SA" then :saturday
-        else
-          raise ArgumentError.new "Unexpected ical_day: #{ical_day.inspect}"
-        end
+        day_symbol = convert_day_code_to_symbol(day_code.to_s)
 
         [day_symbol, Array(position)]
+      end
+
+      def convert_day_code_to_symbol(day_code)
+        case day_code
+          when "SU" then :sunday
+          when "MO" then :monday
+          when "TU" then :tuesday
+          when "WE" then :wednesday
+          when "TH" then :thursday
+          when "FR" then :friday
+          when "SA" then :saturday
+          else
+            raise ArgumentError.new "Unexpected day_code: #{day_code}"
+        end
       end
 
       # Parses ICAL BYDAY value to day and position array

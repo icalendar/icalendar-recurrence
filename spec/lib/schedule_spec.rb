@@ -15,6 +15,14 @@ describe Icalendar::Recurrence::Schedule do
     end
   end
 
+  describe "#convert_day_code_to_symbol" do
+    it "returns symbol given day code" do
+      day_code = "MO"
+      schedule = Schedule.new(nil)
+      expect(schedule.convert_day_code_to_symbol(day_code)).to eq :monday
+    end
+  end
+
   describe "#occurrences_between" do
     let(:example_occurrence) do
       daily_event = example_event :daily
@@ -47,6 +55,27 @@ describe Icalendar::Recurrence::Schedule do
     it "returns a hash of data" do
       expect(schedule.parse_ical_byday("1SA")).to eq({day_code: "SA", position: 1})
       expect(schedule.parse_ical_byday("MO")).to eq({day_code: "MO", position: 0})
+    end
+  end
+
+  describe "#convert_rrule_to_ice_cube_recurrence_rule" do
+    let(:schedule) { Schedule.new(nil) }
+    let(:ice_cube_rule) { schedule.convert_rrule_to_ice_cube_recurrence_rule(rrule) }
+
+    context "hour, minute, second, month_of_year, and day_of_year specified" do
+      let(:rrule) { Icalendar::Values::Recur.new("FREQ=DAILY;BYHOUR=1;BYMINUTE=2;BYSECOND=3;BYMONTH=4,5;BYYEARDAY=6")}
+
+      it "adds hour, minute, second, and day_of_year to ice_cube rule" do
+        expect(ice_cube_rule).to eq IceCube::Rule.daily.hour_of_day(1).minute_of_hour(2).second_of_minute(3).month_of_year(4,5).day_of_year(6)
+      end
+    end
+
+    context "week_start specified" do
+      let(:rrule) { Icalendar::Values::Recur.new("FREQ=WEEKLY;WKST=TU") }
+
+      it "adds week start to ice_cube rule" do
+        expect(ice_cube_rule.week_start).to eq :tuesday
+      end
     end
   end
 end
