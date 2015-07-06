@@ -77,5 +77,6 @@ describe Icalendar::Recurrence::Schedule do
         expect(ice_cube_rule.week_start).to eq :tuesday
       end
     end
+
   end
 end
