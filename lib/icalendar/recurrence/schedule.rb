@@ -63,7 +63,7 @@ module Icalendar
         schedule.end_time = end_time
 
         rrules.each do |rrule|
-          ice_cube_recurrence_rule = convert_rrule_to_ice_cube_recurrence_rule(rrule)
+          ice_cube_recurrence_rule = IceCube::Rule.from_ical(rrule.value_ical)
           schedule.add_recurrence_rule(ice_cube_recurrence_rule)
         end
 
@@ -73,133 +73,6 @@ module Icalendar
         end
 
         schedule
-      end
-
-      def transform_byday_to_hash(byday_entries)
-        hashable_array = Array(byday_entries).map {|byday| convert_byday_to_ice_cube_day_of_week_hash(byday) }.flatten(1)
-        hash = Hash[*hashable_array]
-
-        if hash.values.include?([0]) # byday interval not specified (e.g., BYDAY=SA not BYDAY=1SA)
-          hash.keys
-        else
-          hash
-        end
-      end
-
-      def convert_rrule_to_ice_cube_recurrence_rule(rrule)
-        validate_rrule!(rrule)
-
-        ice_cube_recurrence_rule = base_ice_cube_recurrence_rule(rrule.frequency, rrule.interval, rrule.week_start)
-
-        ice_cube_recurrence_rule.tap do |r|
-          days = transform_byday_to_hash(rrule.by_day)
-
-          # Month
-          r.month_of_year(rrule.by_month) unless rrule.by_month.nil?
-          r.day_of_month(rrule.by_month_day.map(&:to_i)) unless rrule.by_month_day.nil?
-
-          # Day
-          r.day_of_year(rrule.by_year_day.map(&:to_i)) if rrule.by_year_day
-          r.day_of_week(days) if days.is_a?(Hash) and !days.empty?
-          r.day(days) if days.is_a?(Array) and !days.empty?
-
-          # Hour, minute, second
-          r.hour_of_day(rrule.by_hour) if rrule.by_hour
-          r.minute_of_hour(rrule.by_minute.map(&:to_i)) if rrule.by_minute
-          r.second_of_minute(rrule.by_second.map(&:to_i)) if rrule.by_second
-
-          # Until, count
-          r.until(TimeUtil.to_time(rrule.until)) if rrule.until
-          r.count(rrule.count)
-        end
-
-        ice_cube_recurrence_rule
-      end
-
-      def base_ice_cube_recurrence_rule(frequency, interval, week_start)
-        interval ||= 1
-
-        if frequency == "DAILY"
-          IceCube::DailyRule.new(interval)
-        elsif frequency == "WEEKLY"
-          if week_start.nil?
-            IceCube::WeeklyRule.new(interval)
-          else
-            ice_cube_week_start = day_code_to_symbol(week_start)
-            IceCube::WeeklyRule.new(interval, ice_cube_week_start)
-          end
-        elsif frequency == "MONTHLY"
-          IceCube::MonthlyRule.new(interval)
-        elsif frequency == "YEARLY"
-          IceCube::YearlyRule.new(interval)
-        else
-          raise "Unknown frequency: #{frequency.inspect}"
-        end
-      end
-
-      def convert_byday_to_ice_cube_day_of_week_hash(ical_byday)
-        data = parse_ical_byday(ical_byday)
-        day_code = data.fetch(:day_code)
-        position = data.fetch(:position)
-        day_symbol = day_code_to_symbol(day_code)
-
-        [day_symbol, Array(position)]
-      end
-
-      # Converts ICAL BYDAY value to IceCube day symbol:
-      # "SU" => :sunday
-      # "TH" => :thursday
-      def day_code_to_symbol(day_code)
-        case day_code.to_s
-        when "SU" then :sunday
-        when "MO" then :monday
-        when "TU" then :tuesday
-        when "WE" then :wednesday
-        when "TH" then :thursday
-        when "FR" then :friday
-        when "SA" then :saturday
-        else
-          raise ArgumentError.new "Unexpected ICAL day of week code: #{day_code.inspect}"
-        end
-      end
-
-      def convert_day_code_to_symbol(day_code)
-        case day_code
-          when "SU" then :sunday
-          when "MO" then :monday
-          when "TU" then :tuesday
-          when "WE" then :wednesday
-          when "TH" then :thursday
-          when "FR" then :friday
-          when "SA" then :saturday
-          else
-            raise ArgumentError.new "Unexpected day_code: #{day_code}"
-        end
-      end
-
-      # Parses ICAL BYDAY value to day and position array
-      # 1SA => {day_code: "SA", position: 1}
-      # MO  => {day_code: "MO", position: nil
-      def parse_ical_byday(ical_byday)
-        match = ical_byday.match(/(\d*)([A-Z]{2})/)
-        {day_code: match[2], position: match[1].to_i}
-      end
-
-      def convert_duration_to_seconds(ical_duration)
-        return 0 unless ical_duration
-
-        conversion_rates = { seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800 }
-        seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration[unit] * multiplier }
-        seconds * (ical_duration.past ? -1 : 1)
-      end
-    end
-
-
-
-    private
-    def validate_rrule!(rrule)
-      if rrule.frequency.nil?
-        raise ArgumentError.new("`rrule.frequency` must not be nil. Given recurrence rule is invalid: #{rrule}")
       end
     end
 
