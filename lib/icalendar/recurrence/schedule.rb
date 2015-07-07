@@ -40,6 +40,14 @@ module Icalendar
         end
       end
 
+      def all_occurrences
+        ice_cube_occurrences = ice_cube_schedule.all_occurrences
+
+        ice_cube_occurrences.map do |occurrence|
+          convert_ice_cube_occurrence(occurrence)
+        end
+      end
+
       def convert_ice_cube_occurrence(ice_cube_occurrence)
         if timezone
           begin
@@ -74,6 +82,14 @@ module Icalendar
 
         schedule
       end
+    end
+    
+    def convert_duration_to_seconds(ical_duration)
+      return 0 unless ical_duration
+
+      conversion_rates = { seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800 }
+      seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration[unit] * multiplier }
+      seconds * (ical_duration.past ? -1 : 1)
     end
 
   end
