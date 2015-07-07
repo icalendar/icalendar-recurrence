@@ -1,6 +1,11 @@
 require 'support/helpers'
-require 'timecop'
 
+# Support gems
+require 'awesome_print'
+require 'timecop'
+require 'pry'
+
+# Gem under test
 require 'icalendar/recurrence'
 
 include Icalendar::Recurrence
