@@ -30,15 +30,15 @@ module Icalendar
         end
       end
 
-      # Calculates offset for given timezone ID (tzid). Optional, specify a 
+      # Calculates offset for given timezone ID (tzid). Optional, specify a
       # moment in time to calulcate this offset. If no moment is specified,
       # use the current time.
-      # 
+      #
       # # If done before daylight savings:
       # TimeUtil.timezone_offset("America/Los_Angeles") => -08:00
       # # Or after:
       # TimeUtil.timezone_offset("America/Los_Angeles", moment: Time.parse("2014-04-01")) => -07:00
-      # 
+      #
       def timezone_offset(tzid, options = {})
         tzid = Array(tzid).first
         options = {moment: Time.now}.merge(options)
@@ -64,7 +64,7 @@ module Icalendar
       end
 
       def supported_datetime_object?(time_object)
-        time_object.is_a?(Icalendar::Values::DateTime) 
+        time_object.is_a?(Icalendar::Values::DateTime)
       end
 
       def supported_time_object?(time_object)
@@ -72,7 +72,7 @@ module Icalendar
       end
 
       # Replaces the existing offset with one associated with given TZID. Does
-      # not change hour of day, only the offset. For example, if given a UTC 
+      # not change hour of day, only the offset. For example, if given a UTC
       # time of 8am, the returned time object will still be 8am but in another
       # timezone. See test for working examples.
       def force_zone(time, tzid)

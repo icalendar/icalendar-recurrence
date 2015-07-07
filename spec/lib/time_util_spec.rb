@@ -25,7 +25,7 @@ describe TimeUtil do
       pst_midnight =     Time.parse("2014-01-27T12:00:00-08:00")
 
       zoned_datetime = Icalendar::Values::DateTime.new(utc_midnight, "tzid" => "America/Los_Angeles")
-      
+
       expect(TimeUtil.to_time(zoned_datetime)).to eq(pst_midnight)
     end
 
@@ -59,7 +59,7 @@ describe TimeUtil do
     end
 
     it "returns nil when given an unknown timezone" do
-      expect(TimeUtil.timezone_offset("Foo/Bar")).to eq(nil)      
+      expect(TimeUtil.timezone_offset("Foo/Bar")).to eq(nil)
     end
 
     it "removes quotes from given TZID" do
@@ -81,8 +81,8 @@ describe TimeUtil do
 
     it "handles daylight savings" do
       # FYI, clocks turn forward an hour on Nov 2 at 9:00:00 UTC
-      minute_before_clocks_change = Time.parse("Nov 2 at 08:59:00 UTC") # on west coast
-      minute_after_clocks_change = Time.parse("Nov 2 at 09:01:00 UTC") # on west coast
+      minute_before_clocks_change = Time.parse("2014-11-02 at 08:59:00 UTC") # on west coast
+      minute_after_clocks_change  = Time.parse("2014-11-02 at 09:01:00 UTC") # on west coast
 
       expect(TimeUtil.timezone_offset("America/Los_Angeles", moment: minute_before_clocks_change)).to eq("-07:00")
       expect(TimeUtil.timezone_offset("America/Los_Angeles", moment: minute_after_clocks_change)).to eq("-08:00")
