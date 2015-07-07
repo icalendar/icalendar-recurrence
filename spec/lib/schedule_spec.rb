@@ -78,5 +78,14 @@ describe Icalendar::Recurrence::Schedule do
       end
     end
 
+    context "invalid rrule specified" do
+      let(:rrule) { Icalendar::Values::Recur.new("COUNT:3") }
+      it "raises error" do
+        expect {
+          ice_cube_rule.week_start
+        }.to raise_error(ArgumentError)
+      end
+    end
+
   end
 end
