@@ -49,7 +49,7 @@ describe Icalendar::Recurrence::Schedule do
   context "given an event without an end time" do
     let(:schedule) do
       weekly_event = example_event :weekly_with_count # has 1 hour duration
-      allow(weekly_event).to receive_messages(end: nil)
+      allow(weekly_event).to receive(:end).and_return(nil)
       Schedule.new(weekly_event)
     end
 
