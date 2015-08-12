@@ -26,7 +26,7 @@ describe Icalendar::Recurrence::Schedule do
       end
     end
   end
-  
+
   describe "#all_occurrences" do
     let(:example_occurrences) do
       weekly_event = example_event :weekly_with_count
@@ -43,6 +43,18 @@ describe Icalendar::Recurrence::Schedule do
 
     it "returns all occurrences" do
       expect(example_occurrences.count).to eq(151)
+    end
+  end
+
+  context "given an event without an end time" do
+    let(:schedule) do
+      weekly_event = example_event :weekly_with_count # has 1 hour duration
+      allow(weekly_event).to receive_messages(end: nil)
+      Schedule.new(weekly_event)
+    end
+
+    it "calculates end time based on start_time and duration" do
+      expect(schedule.end_time).to eq(schedule.start_time + 1.hour)
     end
   end
 
