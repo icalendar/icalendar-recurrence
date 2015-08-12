@@ -87,7 +87,7 @@ module Icalendar
         return 0 unless ical_duration
 
         conversion_rates = { seconds: 1, minutes: 60, hours: 3600, days: 86400, weeks: 604800 }
-        seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration[unit] * multiplier }
+        seconds = conversion_rates.inject(0) { |sum, (unit, multiplier)| sum + ical_duration.send(unit) * multiplier }
         seconds * (ical_duration.past ? -1 : 1)
       end
     end
