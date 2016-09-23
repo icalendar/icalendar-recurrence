@@ -1,5 +1,10 @@
 # icalendar-recurrence CHANGELOG
 
+## 1.1.1 (September 23, 2016)
+
+- Fix scope issue on convert_duration_to_seconds (issue #11)
+  *Paul Tyng (@paultyng)*
+
 ## 1.1.0 (July 8, 2015)
 
 - Add support for getting all occurrences (issue #7)
