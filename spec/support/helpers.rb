@@ -7,7 +7,7 @@ module Helpers
   end
 end
 
-class Fixnum
+class Integer
   def days
     self*60*60*24
   end
