@@ -76,13 +76,18 @@ module Icalendar
         end
 
         event.exdate.each do |exception_date|
-          exception_date = Time.parse(exception_date) if exception_date.is_a?(String)
-          schedule.add_exception_time(TimeUtil.to_time(exception_date))
+          if exception_date.is_a?(Icalendar::Values::Array)
+            exception_date.each do |nested_exception|
+              schedule.add_exception_time(TimeUtil.to_time(nested_exception))
+            end
+          else
+            schedule.add_exception_time(TimeUtil.to_time(exception_date))
+          end
         end
 
         schedule
       end
-      
+
       def convert_duration_to_seconds(ical_duration)
         return 0 unless ical_duration
 

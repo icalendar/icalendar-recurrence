@@ -52,9 +52,19 @@ describe "Event#occurrences_between" do
     end
   end
 
+  context "event repeating every thursday with multiple exceptions" do
+    let(:event) { example_event :multiple_exception } # has exclusions in array form
+    it "properly calculates recurrence, including exclusion dates" do
+      occurrences = event.occurrences_between(start_time, start_time + 1.months)
+
+      expect(occurrences.length).to eq(1)
+      expect(occurrences.first.start_time).to eq(Time.parse("2017-11-16 13:40:00 UTC"))
+    end
+  end
+
   context "event repeating bimonthly (DST example)" do
     let(:event) { example_event :on_third_every_two_months }
-    
+
     it "occurs twice over 60 days" do
       occurrences = event.occurrences_between(start_time, start_time + 60.days)
 
@@ -81,7 +91,7 @@ describe "Event#occurrences_between" do
 
     it "occurrs 10 times over two weeks" do
       occurrences = event.occurrences_between(start_time, start_time + 13.days)
-      
+
       expect(occurrences.length).to eq(10)
       expect(occurrences.map(&:start_time)).to include(Time.parse("2014-01-10"))
       expect(occurrences.map(&:start_time)).to_not include(Time.parse("2014-01-11"))
@@ -118,7 +128,7 @@ describe "Event#occurrences_between" do
 
   context "event repeating on first saturday of month event" do
     let(:event) { example_event :first_saturday_of_month }
-    
+
     it "occurs twice over two months" do
       occurrences = event.occurrences_between(start_time, start_time + 55.days)
 
