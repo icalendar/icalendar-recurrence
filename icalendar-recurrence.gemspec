@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'icalendar', '~> 2.0'
-  spec.add_runtime_dependency 'ice_cube', '~> 0.13'
+  spec.add_runtime_dependency 'ice_cube', '~> 0.16'
 
   spec.add_development_dependency 'activesupport', '~> 4.0'
   spec.add_development_dependency 'awesome_print'

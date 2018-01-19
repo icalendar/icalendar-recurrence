@@ -32,8 +32,8 @@ module Icalendar
         end
       end
 
-      def occurrences_between(begin_time, closing_time)
-        ice_cube_occurrences = ice_cube_schedule.occurrences_between(TimeUtil.to_time(begin_time), TimeUtil.to_time(closing_time))
+      def occurrences_between(begin_time, closing_time, spans: false)
+        ice_cube_occurrences = ice_cube_schedule.occurrences_between(TimeUtil.to_time(begin_time), TimeUtil.to_time(closing_time), spans: spans)
 
         ice_cube_occurrences.map do |occurrence|
           convert_ice_cube_occurrence(occurrence)
@@ -82,7 +82,7 @@ module Icalendar
 
         schedule
       end
-      
+
       def convert_duration_to_seconds(ical_duration)
         return 0 unless ical_duration
 
