@@ -32,12 +32,12 @@ describe Icalendar::Recurrence::Schedule do
         Schedule.new(week_long_event)
       end
       let(:occurrences) do
-        schedule.occurrences_between(Date.parse("2014-01-18"), Date.parse("2014-01-20"), spans: true)
+        schedule.occurrences_between(Time.parse("20140118T090000"), Date.parse("2014-01-20"), spans: true)
       end
 
       it "returns occurrences within range, beginning from #start_time" do
-        expect(schedule.start_time).to eq(Time.parse("20140113T120000"))
-        expect(occurrences.count).to eq(7)
+        expect(schedule.start_time).to eq(Time.parse("20140113T080000"))
+        expect(occurrences.count).to eq(2)
       end
     end
   end
