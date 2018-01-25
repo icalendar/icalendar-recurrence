@@ -13,8 +13,8 @@ module Icalendar
         dtend
       end
 
-      def occurrences_between(begin_time, closing_time)
-        schedule.occurrences_between(begin_time, closing_time)
+      def occurrences_between(begin_time, closing_time, spans: false)
+        schedule.occurrences_between(begin_time, closing_time, spans: spans)
       end
 
       def schedule
