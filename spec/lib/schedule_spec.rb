@@ -13,6 +13,14 @@ describe Icalendar::Recurrence::Schedule do
       expect(example_occurrence).to respond_to :end_time
     end
 
+    it "returns occurrences within range, including duration spanning #start_time " do
+      schedule = Schedule.new(example_event(:week_long))
+      occurrences = schedule.occurrences_between(Time.parse("2014-01-13T09:00:00-08:00"), Date.parse("2014-01-20"), spans: true)
+
+      expect(schedule.start_time).to eq(Time.parse("2014-01-13T08:00:00-08:00"))
+      expect(occurrences.count).to eq(7)
+    end
+
     context "timezoned event" do
       let(:example_occurrence) do
         timezoned_event = example_event :first_saturday_of_month
@@ -23,21 +31,6 @@ describe Icalendar::Recurrence::Schedule do
       it "returns object that responds to #start_time and #end_time (timezoned example)" do
         expect(example_occurrence).to respond_to :start_time
         expect(example_occurrence).to respond_to :end_time
-      end
-    end
-
-    context "overlapping from_time with spans option" do
-      let(:schedule) do
-        week_long_event = example_event :week_long
-        Schedule.new(week_long_event)
-      end
-      let(:occurrences) do
-        schedule.occurrences_between(Time.parse("20140118T090000"), Date.parse("2014-01-20"), spans: true)
-      end
-
-      it "returns occurrences within range, beginning from #start_time" do
-        expect(schedule.start_time).to eq(Time.parse("20140113T080000"))
-        expect(occurrences.count).to eq(2)
       end
     end
   end
