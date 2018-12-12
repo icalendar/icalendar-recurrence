@@ -53,12 +53,24 @@ describe "Event#occurrences_between" do
   end
 
   context "event repeating every thursday with multiple exceptions" do
-    let(:event) { example_event :multiple_exception } # has exclusions in array form
-    it "properly calculates recurrence, including exclusion dates" do
-      occurrences = event.occurrences_between(start_time, start_time + 1.months)
+    context "exclusions are on a single line" do
+      let(:event) { example_event :multiple_exception } # has exclusions in array form
+      it "properly calculates recurrence, including exclusion dates" do
+        occurrences = event.occurrences_between(start_time, start_time + 1.months)
 
-      expect(occurrences.length).to eq(1)
-      expect(occurrences.first.start_time).to eq(Time.parse("2017-11-16 13:40:00 UTC"))
+        expect(occurrences.length).to eq(1)
+        expect(occurrences.first.start_time).to eq(Time.parse("2017-11-16 13:40:00 UTC"))
+      end
+    end
+
+    context "exclusions are on multiple lines" do
+      let(:event) { example_event :multiple_exception_multiple_line } # has multiple single exclusions
+      it "properly calculates recurrence, including exclusion dates" do
+        occurrences = event.occurrences_between(start_time, start_time + 1.months)
+
+        expect(occurrences.length).to eq(1)
+        expect(occurrences.first.start_time).to eq(Time.parse("2017-11-16 13:40:00 UTC"))
+      end
     end
   end
 
