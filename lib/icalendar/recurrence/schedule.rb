@@ -75,14 +75,15 @@ module Icalendar
           schedule.add_recurrence_rule(ice_cube_recurrence_rule)
         end
 
-        event.exdate.each do |exception_date|
-          exception_date = Time.parse(exception_date) if exception_date.is_a?(String)
-          schedule.add_exception_time(TimeUtil.to_time(exception_date))
+        event.exdate.each do |exception_date_or_dates|
+          Array(exception_date_or_dates).each do |exception_date|
+            schedule.add_exception_time(TimeUtil.to_time(exception_date))
+          end
         end
 
         schedule
       end
-      
+
       def convert_duration_to_seconds(ical_duration)
         return 0 unless ical_duration
 
