@@ -86,6 +86,20 @@ describe "Event#occurrences_between" do
     end
   end
 
+  context "event repeating weekly with exdates" do
+    let(:event) { example_event :dst_exdate }
+
+    it "properly skips christmas and new years" do
+      occurrences = event.occurrences_between(start_time, start_time + 4.months)
+
+      expect(occurrences.length).to eq(14)
+      christmas_day = Date.new 2019, 12, 25
+      expect(occurrences.all? { |o| o.start_time.to_date != christmas_day }).to eq(true)
+      new_years_day = Date.new 2020, 1, 1
+      expect(occurrences.all? { |o| o.start_time.to_date != new_years_day }).to eq(true)
+    end
+  end
+
   context "event repeating yearly" do
     let(:event) { example_event :first_of_every_year }
 
