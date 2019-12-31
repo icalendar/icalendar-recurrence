@@ -54,7 +54,7 @@ module Icalendar
             tz = TZInfo::Timezone.get(timezone)
             start_time = tz.local_to_utc(ice_cube_occurrence.start_time)
             end_time = tz.local_to_utc(ice_cube_occurrence.end_time)
-          rescue TZInfo::InvalidTimezoneIdentifier => e
+          rescue TZInfo::InvalidTimezoneIdentifier
             warn "Unknown TZID specified in ical event (#{timezone.inspect}), ignoring (will likely cause event to be at wrong time!)"
           end
         end
@@ -78,6 +78,7 @@ module Icalendar
         event.exdate.each do |exception_date_or_dates|
           Array(exception_date_or_dates).each do |exception_date|
             # exception times should have the same tz offset as the event start or they'll be ignored as different times
+            # ignored if ActiveSupport::TimeWithZone is available
             schedule.add_exception_time(TimeUtil.to_time(exception_date, moment: start_time))
           end
         end

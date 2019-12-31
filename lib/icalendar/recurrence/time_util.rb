@@ -1,4 +1,9 @@
 require 'tzinfo'
+begin
+  require 'active_support/time'
+rescue LoadError
+  # that's ok, will just fall back to Time
+end
 
 module Icalendar
   module Recurrence
@@ -20,6 +25,8 @@ module Icalendar
       def to_time(time_object, options = {})
         if supported_time_object?(time_object)
           time_object
+        elsif supported_icalendar_object?(time_object)
+          time_object.value
         elsif supported_datetime_object?(time_object)
           datetime_to_time(time_object, options)
         elsif supported_date_object?(time_object)
@@ -67,8 +74,16 @@ module Icalendar
         time_object.is_a?(Icalendar::Values::DateTime)
       end
 
+      def supported_icalendar_object?(time_object)
+        time_object.is_a?(Icalendar::Values::DateTime) && supported_activesupport_object?(time_object.value)
+      end
+
       def supported_time_object?(time_object)
-        time_object.is_a?(Time)
+        time_object.is_a?(Time) || supported_activesupport_object?(time_object)
+      end
+
+      def supported_activesupport_object?(time_object)
+        defined?(ActiveSupport::TimeWithZone) && time_object.is_a?(ActiveSupport::TimeWithZone)
       end
 
       # Replaces the existing offset with one associated with given TZID. Does
