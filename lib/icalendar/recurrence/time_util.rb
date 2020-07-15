@@ -1,11 +1,17 @@
 require 'tzinfo'
+begin
+  require 'active_support/time'
+rescue LoadError
+  # that's ok, will just fall back to Time
+end
 
 module Icalendar
   module Recurrence
     module TimeUtil
-      def datetime_to_time(datetime)
+      def datetime_to_time(datetime, options = {})
         raise ArgumentError, "Unsupported DateTime object passed (must be Icalendar::Values::DateTime#{datetime.class} passed instead)" unless supported_datetime_object?(datetime)
-        offset = timezone_offset(datetime.ical_params["tzid"], moment: datetime.to_date)
+        options[:moment] ||= datetime.to_date
+        offset = timezone_offset(datetime.ical_params["tzid"], options)
         offset ||= datetime.strftime("%:z")
 
         Time.new(datetime.year, datetime.month, datetime.mday, datetime.hour, datetime.min, datetime.sec, offset)
@@ -16,11 +22,13 @@ module Icalendar
         Time.new(date.year, date.month, date.mday)
       end
 
-      def to_time(time_object)
+      def to_time(time_object, options = {})
         if supported_time_object?(time_object)
           time_object
+        elsif supported_icalendar_object?(time_object)
+          time_object.value
         elsif supported_datetime_object?(time_object)
-          datetime_to_time(time_object)
+          datetime_to_time(time_object, options)
         elsif supported_date_object?(time_object)
           date_to_time(time_object)
         elsif time_object.is_a?(String)
@@ -41,8 +49,7 @@ module Icalendar
       #
       def timezone_offset(tzid, options = {})
         tzid = Array(tzid).first
-        options = {moment: Time.now}.merge(options)
-        moment = options.fetch(:moment)
+        moment = options.fetch(:moment, Time.now)
         utc_moment = to_time(moment.clone).utc
         tzid = tzid.to_s.gsub(/^(["'])|(["'])$/, "")
         utc_offset =  TZInfo::Timezone.get(tzid).period_for_utc(utc_moment).utc_total_offset # this seems to work, but I feel like there is a lurking bug
@@ -50,7 +57,7 @@ module Icalendar
         hour_offset = "+#{hour_offset}" if hour_offset >= 0
         match = hour_offset.to_s.match(/(\+|-)(\d+)/)
         "#{match[1]}#{match[2].rjust(2, "0")}:00"
-      rescue TZInfo::InvalidTimezoneIdentifier => e
+      rescue TZInfo::InvalidTimezoneIdentifier
         nil
       end
 
@@ -67,8 +74,16 @@ module Icalendar
         time_object.is_a?(Icalendar::Values::DateTime)
       end
 
+      def supported_icalendar_object?(time_object)
+        time_object.is_a?(Icalendar::Values::DateTime) && supported_activesupport_object?(time_object.value)
+      end
+
       def supported_time_object?(time_object)
-        time_object.is_a?(Time)
+        time_object.is_a?(Time) || supported_activesupport_object?(time_object)
+      end
+
+      def supported_activesupport_object?(time_object)
+        defined?(ActiveSupport::TimeWithZone) && time_object.is_a?(ActiveSupport::TimeWithZone)
       end
 
       # Replaces the existing offset with one associated with given TZID. Does
