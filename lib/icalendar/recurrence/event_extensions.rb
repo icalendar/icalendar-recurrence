@@ -17,6 +17,10 @@ module Icalendar
         schedule.occurrences_between(begin_time, closing_time, spans: spans)
       end
 
+      def all_occurrences
+        schedule.all_occurrences
+      end
+
       def schedule
         @schedule ||= Schedule.new(self)
       end
