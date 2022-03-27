@@ -100,6 +100,22 @@ describe "Event#occurrences_between" do
     end
   end
 
+  context "event repeating weekly with rdates" do
+    let(:event) { example_event :dst_rdate }
+
+    it "properly includes specified rdates" do
+      occurrences = event.occurrences_between(start_time, start_time + 4.months)
+      extra_day_after_period = Date.new 2020, 02, 01
+      occurrence = occurrences.find { |o| o.start_time.to_date == extra_day_after_period }
+
+      expect(occurrences.length).to eq(17)
+      expect(occurrence).to_not be_nil
+
+      expect(occurrence.start_time).to eq(Time.new 2020, 02, 01, 19, 0, 0, "utc")
+      expect(occurrence.end_time).to eq(Time.new 2020, 02, 01, 21, 0, 0, "utc")
+    end
+  end
+
   context "event repeating yearly" do
     let(:event) { example_event :first_of_every_year }
 

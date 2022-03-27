@@ -83,6 +83,14 @@ module Icalendar
           end
         end
 
+        event.rdate.each do |extra_date_or_dates|
+          Array(extra_date_or_dates).each do |extra_date|
+            # exception times should have the same tz offset as the event start or they'll be ignored as different times
+            # ignored if ActiveSupport::TimeWithZone is available
+            schedule.add_recurrence_time(TimeUtil.to_time(extra_date, moment: start_time))
+          end
+        end
+
         schedule
       end
 
