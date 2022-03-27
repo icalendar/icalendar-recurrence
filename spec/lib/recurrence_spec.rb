@@ -111,8 +111,8 @@ describe "Event#occurrences_between" do
       expect(occurrences.length).to eq(17)
       expect(occurrence).to_not be_nil
 
-      expect(occurrence.start_time).to eq(Time.new 2020, 02, 01, 19, 0, 0, "utc")
-      expect(occurrence.end_time).to eq(Time.new 2020, 02, 01, 21, 0, 0, "utc")
+      expect(occurrence.start_time).to eq(Time.new 2020, 02, 01, 19, 0, 0, "+00:00")
+      expect(occurrence.end_time).to eq(Time.new 2020, 02, 01, 21, 0, 0, "+00:00")
     end
   end
 
