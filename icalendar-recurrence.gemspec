@@ -19,6 +19,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'icalendar', '~> 2.0'
   spec.add_runtime_dependency 'ice_cube', '~> 0.16'
+  spec.add_runtime_dependency 'tzinfo', '~> 0.3'
 
   spec.add_development_dependency 'activesupport', '~> 4.0'
   spec.add_development_dependency 'awesome_print'
@@ -27,5 +28,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '>= 12.3.3'
   spec.add_development_dependency 'rspec', '~> 3.9'
   spec.add_development_dependency 'timecop', '~> 0.6.3'
-  spec.add_development_dependency 'tzinfo', '~> 0.3'
 end
