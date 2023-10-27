@@ -20,7 +20,7 @@ and run `bundle install` from your shell.
 require 'date' # for parse method
 require 'icalendar/recurrence'
 
-calendars = Icalendar.parse(File.read(path_to_ics)) # parse an ICS file
+calendars = Icalendar::Calendar.parse(File.read(path_to_ics)) # parse an ICS file
 event = Array(calendars).first.events.first # retrieve the first event
 event.occurrences_between(Date.parse("2014-01-01"), Date.parse("2014-02-01")) # get all occurrence for one month
 ```
@@ -67,7 +67,7 @@ EOF
 
 # An event that occurs every day, starting January 1, 2014 with one excluded 
 # date. January 28, 2014 will not appear in the occurrences.
-calendars = Icalendar.parse(ics_string)
+calendars = Icalendar::Calendar.parse(ics_string)
 every_day_except_jan_28 = Array(calendars).first.events.first
 puts "Every day except January 28, 2014, occurrences from 2014-01-01 to 2014-02-01:"
 puts every_day_except_jan_28.occurrences_between(Date.parse("2014-01-01"), Date.parse("2014-02-01"))
