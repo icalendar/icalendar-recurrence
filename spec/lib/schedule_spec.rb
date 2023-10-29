@@ -21,6 +21,12 @@ describe Icalendar::Recurrence::Schedule do
       expect(occurrences.count).to eq(7)
     end
 
+    it 'returns object whose event method matches the origin event' do
+      # Simple test to make sure the event carried over; different __id__
+      expect(example_occurrence.parent.custom_properties).to eq example_event(:daily).custom_properties
+      expect(example_occurrence.parent.name).to eq example_event(:daily).name
+    end
+
     context "timezoned event" do
       let(:example_occurrence) do
         timezoned_event = example_event :first_saturday_of_month

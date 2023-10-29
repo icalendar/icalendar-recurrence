@@ -2,7 +2,7 @@ require 'ice_cube'
 
 module Icalendar
   module Recurrence
-    class Occurrence < Struct.new(:start_time, :end_time)
+    class Occurrence < Struct.new(:start_time, :end_time, :parent)
     end
 
     class Schedule
@@ -52,7 +52,7 @@ module Icalendar
         start_time = ice_cube_occurrence.start_time.utc
         end_time = ice_cube_occurrence.end_time.utc
 
-        Icalendar::Recurrence::Occurrence.new(start_time, end_time)
+        Icalendar::Recurrence::Occurrence.new(start_time, end_time, @event)
       end
 
       def ice_cube_schedule
