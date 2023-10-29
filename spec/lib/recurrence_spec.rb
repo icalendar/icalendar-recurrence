@@ -188,3 +188,28 @@ describe "Event#occurrences_between" do
     end
   end
 end
+
+describe "Event#all_occurrences" do
+  let(:start_time) { event.start_time }
+
+  context "event repeating once a month for three months" do
+    let(:event) { example_event :one_day_a_month_for_three_months }
+
+    it "get all 3 occurences" do
+      occurrences = event.all_occurrences
+
+      expect(occurrences.length).to eq(3)
+    end
+  end
+
+  context "event repeating yearly" do
+    let(:event) { example_event :first_of_every_year }
+
+    it "can not get all occurences when not using count or until" do
+      expect {
+        event.all_occurrences
+      }.to raise_error(ArgumentError)
+    end
+  end
+
+end

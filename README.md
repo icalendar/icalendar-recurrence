@@ -25,6 +25,10 @@ event = Array(calendars).first.events.first # retrieve the first event
 event.occurrences_between(Date.parse("2014-01-01"), Date.parse("2014-02-01")) # get all occurrence for one month
 ```
 
+### Get all occurrences
+
+To get all occurrences you can use `all_occurrences`. This only works when you have specified an ending using `until` or `count` in your RRULE.
+
 ### Working with occurrences
 
 An event occurrence is a simple struct object with `start_time` and `end_time` methods.
