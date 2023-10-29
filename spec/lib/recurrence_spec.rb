@@ -159,8 +159,8 @@ describe "Event#occurrences_between" do
       occurrences = event.occurrences_between(start_time, start_time + 55.days)
 
       expected_start_times = [
-        Time.parse("2014-01-04 at 12am").force_zone("America/Los_Angeles"),
-        Time.parse("2014-02-01 at 12am").force_zone("America/Los_Angeles"),
+        Time.parse("2014-01-04 at 10am").force_zone("America/Los_Angeles"),
+        Time.parse("2014-02-01 at 10am").force_zone("America/Los_Angeles"),
       ]
 
       expect(occurrences.length).to eq(2)
