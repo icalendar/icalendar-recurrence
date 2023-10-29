@@ -29,8 +29,8 @@ DESCRIPTION:\nScheduled maintenance \n
 X-MS-OLK-SENDER:mailto:foo@example.ca
 ORGANIZER;SENT-BY="mailto:foo@example.ca":mailto:itadmin@example.ca
 X-MS-OLK-SENDER:mailto:foo@example.ca
-DTSTART;TZID="America/Los_Angeles":20140104T000000
-DTEND;TZID="America/Los_Angeles":20140104T040000
+DTSTART;TZID="America/Los_Angeles":20140104T100000
+DTEND;TZID="America/Los_Angeles":20140104T110000
 STATUS:CONFIRMED
 CLASS:PUBLIC
 X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY

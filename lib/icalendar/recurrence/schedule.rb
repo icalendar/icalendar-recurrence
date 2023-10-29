@@ -49,18 +49,8 @@ module Icalendar
       end
 
       def convert_ice_cube_occurrence(ice_cube_occurrence)
-        if timezone
-          begin
-            tz = TZInfo::Timezone.get(timezone)
-            start_time = tz.local_to_utc(ice_cube_occurrence.start_time)
-            end_time = tz.local_to_utc(ice_cube_occurrence.end_time)
-          rescue TZInfo::InvalidTimezoneIdentifier
-            warn "Unknown TZID specified in ical event (#{timezone.inspect}), ignoring (will likely cause event to be at wrong time!)"
-          end
-        end
-
-        start_time ||= ice_cube_occurrence.start_time
-        end_time ||= ice_cube_occurrence.end_time
+        start_time = ice_cube_occurrence.start_time.utc
+        end_time = ice_cube_occurrence.end_time.utc
 
         Icalendar::Recurrence::Occurrence.new(start_time, end_time)
       end
