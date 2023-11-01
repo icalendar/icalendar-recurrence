@@ -1,5 +1,14 @@
 # icalendar-recurrence CHANGELOG
 
+## 1.2.0 (November 1, 2023)
+
+- Fix exception date handling across DST boundaries (PR #25)
+- Add `:parent` to the Occurrence class, to match constructor for Icalendar::Component (PR #23)
+- Add `Event#all_occurrences` method (PR #28)
+- Move TZInfo to a runtime dependency (PR #31)
+- Handle `RDATE` recurrence rules (PR #33)
+- Use built-in `.utc` method for occurrence time in all cases (PR #35 & #37)
+
 ## 1.1.2 (September 23, 2016)
 
 - Loosen dependency on ice_cube gem to allow minor upgrades (issue #16)
