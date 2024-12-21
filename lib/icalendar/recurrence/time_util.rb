@@ -26,7 +26,12 @@ module Icalendar
         if supported_time_object?(time_object)
           time_object
         elsif supported_icalendar_object?(time_object)
-          time_object.value
+          if !defined?(ActiveSupport) || Gem::Version.new(ActiveSupport::VERSION::STRING) < Gem::Version.new('7.2')
+            time_object.value
+          else
+            # Preserve the timezone of the time_object
+            time_object.value.to_time.in_time_zone(time_object.value.time_zone)
+          end
         elsif supported_datetime_object?(time_object)
           datetime_to_time(time_object, options)
         elsif supported_date_object?(time_object)
