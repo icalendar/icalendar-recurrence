@@ -1,5 +1,9 @@
 # icalendar-recurrence CHANGELOG
 
+## 1.2.1 (November 1, 2025)
+
+- Preserve the timezone of time_object with ActiveSupport >= 7.2 (PR #43)
+
 ## 1.2.0 (November 1, 2023)
 
 - Fix exception date handling across DST boundaries (PR #25)
